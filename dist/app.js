@@ -6,8 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const http_errors_1 = __importDefault(require("http-errors"));
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
+const express_graphql_1 = require("express-graphql");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const morgan_1 = __importDefault(require("morgan"));
+const schema_1 = __importDefault(require("./schema"));
 const app = express_1.default();
 // view engine setup
 app.set('views', path_1.default.join(__dirname, 'views'));
@@ -18,8 +20,15 @@ app.use(express_1.default.urlencoded({ extended: false }));
 app.use(cookie_parser_1.default());
 app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
 app.use('/', (req, res, next) => {
-    res.send('server running');
+    console.log('server running');
+    next();
 });
+//const root = resolver;
+app.use('/graphql', express_graphql_1.graphqlHTTP({
+    schema: schema_1.default,
+    //rootValue: root,
+    graphiql: true
+}));
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next(http_errors_1.default(404));

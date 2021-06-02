@@ -1,9 +1,11 @@
 import createError, {HttpError} from 'http-errors';
 import express, {Request, Response, NextFunction} from 'express';
 import path from 'path';
+import {graphqlHTTP} from 'express-graphql';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-
+import schema from './schema';
+import resolver from './resolver'
 
 
 const app = express();
@@ -18,8 +20,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/',(req, res, next)=>{
-  res.send('server running');
-})
+    console.log('server running');
+    next();
+});
+
+//const root = resolver;
+
+app.use('/graphql', graphqlHTTP({
+  schema: schema,
+  //rootValue: root,
+  graphiql: true
+}))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
